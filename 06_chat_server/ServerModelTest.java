@@ -1,0 +1,156 @@
+package org.cis1200;
+
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class ServerModelTest {
+    private ServerModel model;
+
+    /**
+     * Before each test, we initialize model to be
+     * a new ServerModel (with all new, empty state)
+     */
+    @BeforeEach
+    public void setUp() {
+        // We initialize a fresh ServerModel for each test
+        model = new ServerModel();
+    }
+
+    /**
+     * Here is an example test that checks the functionality of your
+     * changeNickname error handling. Each line has commentary directly above
+     * it which you can use as a framework for the remainder of your tests.
+     */
+    @Test
+    public void testInvalidNickname() {
+        // A user must be registered before their nickname can be changed,
+        // so we first register a user with an arbitrarily chosen id of 0.
+        model.registerUser(0);
+
+        // We manually create a Command that appropriately tests the case
+        // we are checking. In this case, we create a NicknameCommand whose
+        // new Nickname is invalid.
+        Command command = new NicknameCommand(0, "User0", "!nv@l!d!");
+
+        // We manually create the expected Broadcast using the Broadcast
+        // factory methods. In this case, we create an error Broadcast with
+        // our command and an INVALID_NAME error.
+        Broadcast expected = Broadcast.error(
+                command, ServerResponse.INVALID_NAME
+        );
+
+        // We then get the actual Broadcast returned by the method we are
+        // trying to test. In this case, we use the updateServerModel method
+        // of the NicknameCommand.
+        Broadcast actual = command.updateServerModel(model);
+
+        // The first assertEquals call tests whether the method returns
+        // the appropriate Broadcast.
+        assertEquals(expected, actual, "Broadcast");
+
+        // We also want to test whether the state has been correctly
+        // changed.In this case, the state that would be affected is
+        // the user's Collection.
+        Collection<String> users = model.getRegisteredUsers();
+
+        // We now check to see if our command updated the state
+        // appropriately. In this case, we first ensure that no
+        // additional users have been added.
+        assertEquals(1, users.size(), "Number of registered users");
+
+        // We then check if the username was updated to an invalid value
+        // (it should not have been).
+        assertTrue(users.contains("User0"), "Old nickname still registered");
+
+        // Finally, we check that the id 0 is still associated with the old,
+        // unchanged nickname.
+        assertEquals(
+                "User0", model.getNickname(0),
+                "User with id 0 nickname unchanged"
+        );
+    }
+
+    /*
+     * Your TAs will be manually grading the tests that you write below this
+     * comment block. Don't forget to test the public methods you have added to
+     * your ServerModel class, as well as the behavior of the server in
+     * different scenarios.
+     * You might find it helpful to take a look at the tests we have already
+     * provided you with in Task4Test, Task3Test, and Task5Test.
+     */
+
+    // Task 3 Tests
+
+
+    @Test
+    public void testJoinNonExistentChannel() {
+        model.registerUser(0);
+        Command command = new JoinCommand(0, "User0", "general");
+        Broadcast expected = Broadcast.error(command, ServerResponse.NO_SUCH_CHANNEL);
+        assertEquals(expected, command.updateServerModel(model), "Broadcast");
+    }
+
+    @Test
+    public void testDeregisterSingleUser() {
+        model.registerUser(0);
+        model.deregisterUser(0);
+        assertTrue(model.getRegisteredUsers().isEmpty(), "No registered users");
+    }
+
+    @Test
+    public void testDeregisterOneOfManyUsers() {
+        model.registerUser(0);
+        model.registerUser(1);
+        model.deregisterUser(0);
+        assertFalse(model.getRegisteredUsers().isEmpty(), "Registered users still exist");
+        assertFalse(model.getRegisteredUsers().contains("User0"), "User0 does not exist");
+        assertTrue(model.getRegisteredUsers().contains("User1"), "User1 still exists");
+    }
+
+    // Task 4 cases
+    @Test
+    public void testEncapsulationgetUsersInChannelOwner() {
+        model.registerUser(0);
+        model.registerUser(1);
+        Command create = new CreateCommand(1, "User1", "java", false);
+        create.updateServerModel(model);
+        Collection<String> usersBefore = model.getUsersInChannel("java");
+        try {
+            usersBefore.remove("User1");
+        } catch (UnsupportedOperationException uox) {
+            // Ok to use Collections.unmodifiableSet
+        }
+        Collection<String> usersAfter = model.getUsersInChannel("java");
+        assertTrue(usersAfter.contains("User1"), "User1 not removed");
+    }
+
+    @Test
+    public void testEncapsulationgetUsersInChannelNonOwner() {
+        model.registerUser(0);
+        model.registerUser(1);
+        Command create = new CreateCommand(0, "User0", "java", false);
+        create.updateServerModel(model);
+        Command join = new JoinCommand(1, "User1", "java");
+        join.updateServerModel(model);
+        Collection<String> usersBefore = model.getUsersInChannel("java");
+        try {
+            usersBefore.remove("User1");
+        } catch (UnsupportedOperationException uox) {
+            // Ok to use Collections.unmodifiableSet
+        }
+        Collection<String> usersAfter = model.getUsersInChannel("java");
+        assertTrue(usersAfter.contains("User1"), "User1 not removed");
+    }
+
+    //Test 5 cases
+
+
+
+
+
+
+}

@@ -1,0 +1,70 @@
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=
+CIS 1200 HW07 README
+=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=:=
+
+============
+=: Task 2 :=
+============
+
+- Do you plan on creating any new classes in your design? If so, what classes
+  are you making, what do they store, and what behaviors do they have?
+
+  I plan on making a new class called Channel.java that holds the information for certain functions that I will use.
+
+- How do you plan on storing what users are registered on the server?
+
+    The registered users are stored in a Map structure where the key is the ID and the value is the nickname
+
+- How do you plan on keeping track of which user has which user ID, considering
+  the fact that the user's nickname can change over the course of the program?
+
+    Again, the ID is stored in the map structure in which the key is the ID and the value is the nickname
+
+- How do you plan on storing what users are in a channel?
+
+    They are stored in a set data structure
+
+- How do you plan on keeping track of which user is the owner of each channel?
+    The owner is stored as a string in the object channel
+- Justify your choice of collections (Set, Map, or List) for the
+  collections you use in your design.
+  I used Set because of it's utility in sorting ability.
+
+
+============
+=: Task 3 :=
+============
+
+- Did you make any changes to your design while doing this task? Why?
+    I added in getUserName so that it was easier to access the username from the variables given
+
+
+============
+=: Task 4 :=
+============
+
+- Did you make any changes to your design while doing this task? Why?
+    N/A
+
+
+============
+=: Task 5 :=
+============
+
+- How do you plan on keeping track of which channels are invite-only?
+    I plan on doing this with the checkPrivate boolean in the channel class
+- Will you make any changes to your work from before in order to make
+  implementing invite-only channels easier?
+    Yes I will make changes before adding the functionalities to createChannel and
+    Join Channel to make the invite only channels easier to make
+
+============
+=: Task 6 :=
+============
+
+- Did you have to make any changes to your design in Task 6? Why?
+    I did make some changes to set variables equal to values that were constantly included.
+- If you were to redo this assignment, what changes (if any) would you make in
+  how you designed your code?
+  I would stick to TreeSet in the future but improve the modularality and keep
+  track of variable names in a more effiecient manner.
